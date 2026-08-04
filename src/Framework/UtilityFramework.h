@@ -20,6 +20,7 @@
 
 #pragma once
 #include "PluginFramework.h"
+#include "UnicodeFormatTranslation.h"
 #include "UtilityFrameworkMIT.h"
 
 

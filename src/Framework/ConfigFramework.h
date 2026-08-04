@@ -1,5 +1,5 @@
 // This file is part of "NppCppMSVS: Visual Studio Project Template for a Notepad++ C++ Plugin"
-// Copyright 2025 by Randall Joseph Fellmy <software@coises.com>, <http://www.coises.com/software/>
+// Copyright 2025, 2026 by Randall Joseph Fellmy <software@coises.com>, <http://www.coises.com/software/>
 
 // The source code contained in this file is independent of Notepad++ code.
 // It is released under the MIT (Expat) license:
@@ -95,8 +95,9 @@ template<typename T> struct config {
     T& get()               { if (!loaded && store && !name.empty()) { get(*store, name); loaded = true; } return value; }
 
     const T& put(nlohmann::json& j, std::string_view n) const { j[n] = value; return value; }
-    const T& put(HWND w)                                      { show(w, get()); return value; }
-    const T& put(HWND w, int id)                              { return put(GetDlgItem(w, id)); }
+    const T& put(HWND w)         { show(w, get()); return value; }
+    const T& put(HWND w, int id) { return put(GetDlgItem(w, id)); }
+    const T& put()               { if (store && !name.empty()) { put(*store, name); loaded = true; } return value; }
 
     operator T&()                    { return get(); }
     config<T>& operator=(const T& v) { value = v; loaded = true; if (store && !name.empty()) put(*store, name); return *this; }
@@ -121,7 +122,7 @@ template<typename T> bool config<T>::peek(T& v, const nlohmann::json& j, std::st
     return true;
 }
 
-template<typename T>  bool config<T>::peek(T& v, HWND w) {
+template<typename T> bool config<T>::peek(T& v, HWND w) {
     if constexpr (std::is_same_v<T, bool>) {
         auto state = SendMessage(w, BM_GETCHECK, 0, 0);
         if (state == BST_INDETERMINATE) return false;
