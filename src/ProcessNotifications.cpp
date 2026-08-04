@@ -1,5 +1,5 @@
-// This file is part of Compose for Notepad++.
-// Copyright 2025 by rjf.
+// This file is part of Compose for Notepad++,
+// Copyright 2025 by Randy Fellmy <https://www.coises.com/>.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 
 #include "Framework/PluginFramework.h"
 #include "Framework/UtilityFramework.h"
+#include "Framework/FileDialogBase.h"
 #include "CommonData.h"
-#include "FileDialogBase.h"
 #include <fstream>
 
 bool loadSequenceDefinitions();

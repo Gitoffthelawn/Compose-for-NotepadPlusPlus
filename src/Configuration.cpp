@@ -1,5 +1,5 @@
-// This file is part of Compose for Notepad++.
-// Copyright 2025 by rjf.
+// This file is part of Compose for Notepad++,
+// Copyright 2025, 2026 by Randy Fellmy <https://www.coises.com/>.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -83,20 +83,32 @@ void loadConfiguration() {
          }
     }
 
-    // If changes may be needed to accommodate old versions of the configuration file,
-    // check saved["ConfigurationVersion"] here and make adjustments
-
     configuration.merge_patch(saved);
 
-    // If there are settings you want to copy immediately from the JSON store (configuration)
-    // to program storage, do that here.
+}
 
+
+namespace {
+    BOOL CALLBACK CountNppInstances(HWND hwnd, LPARAM lParam) {
+        wchar_t className[256];
+        if (GetClassName(hwnd, className, 256)) {
+            if (wcscmp(className, L"Notepad++") == 0) {
+                int* count = reinterpret_cast<int*>(lParam);
+                (*count)++;
+            }
+        }
+        return TRUE;
+    }
 }
 
 
 void saveConfiguration() {
 
-    // If you have settings that are not copied to the JSON store whenever they change, copy them here.
+    // Check for multiple instances. Don't save unless this is the last instance.
+
+    int nppInstanceCount = 0;
+    EnumWindows(CountNppInstances, reinterpret_cast<LPARAM>(&nppInstanceCount));
+    if (nppInstanceCount > 1) return;
 
     if (configFound) {
         if (configIgnored) {

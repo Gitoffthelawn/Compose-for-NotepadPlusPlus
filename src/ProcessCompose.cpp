@@ -1,5 +1,5 @@
-// This file is part of Compose for Notepad++.
-// Copyright 2025 by rjf.
+// This file is part of Compose for Notepad++,
+// Copyright 2025, 2026 by Randy Fellmy <https://www.coises.com/>.
 
 // The source code contained in this file is independent of Notepad++ code.
 // It is released under the MIT (Expat) license:
@@ -19,8 +19,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// #include "Framework/UtilityFrameworkMIT.h"
-#include "UnicodeFormatTranslation.h"
+#include "Framework/UnicodeFormatTranslation.h"
 #include "CommonData.h"
 
 // CombiningRule and combiningRules are defined in CommonData.cpp:

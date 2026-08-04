@@ -1,5 +1,5 @@
-// This file is part of Compose for Notepad++.
-// Copyright 2025 by rjf.
+// This file is part of Compose for Notepad++,
+// Copyright 2025 by Randy Fellmy <https://www.coises.com/>.
 
 // The source code contained in this file is independent of Notepad++ code.
 // It is released under the MIT (Expat) license:

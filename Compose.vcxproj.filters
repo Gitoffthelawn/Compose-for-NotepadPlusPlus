@@ -73,11 +73,11 @@
     <ClInclude Include="src\Framework\UtilityFrameworkMIT.h">
       <Filter>Support Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\FileDialogBase.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Framework\UnicodeFormatTranslation.h">
+      <Filter>Support Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\UnicodeFormatTranslation.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Framework\FileDialogBase.h">
+      <Filter>Support Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

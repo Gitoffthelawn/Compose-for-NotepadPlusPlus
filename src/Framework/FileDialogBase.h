@@ -1,5 +1,5 @@
-// This file is part of Compose for Notepad++.
-// Copyright 2025 by rjf.
+// This file is part of "NppCppMSVS: Visual Studio Project Template for a Notepad++ C++ Plugin"
+// Copyright 2025, 2026 by Randall Joseph Fellmy <software@coises.com>, <http://www.coises.com/software/>
 
 // The source code contained in this file is independent of Notepad++ code.
 // It is released under the MIT (Expat) license:
@@ -19,15 +19,30 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+// This header defines two structures, OpenDialogBase and SaveDialogBase, which can be used to customize
+// and show a Windows Common Item Dialog to open or save a file.
+//
+// As of this writing, you can find Microsoft documentation for the Common Item (File) Dialogs here:
+// https://learn.microsoft.com/en-us/windows/win32/shell/common-file-dialog
+// The OpenDialogBase and SaveDialogBase classes manage many of the details of using these dialogs.
+//
+// This is a preliminary version. It has not yet been tested in a broad variety of contexts, and
+// it does not yet directly implement all reasonable features of the Common Item Dialog interface.
+// Details will probably change in the future; if possible, compatibility will be maintained.
+
+
+#pragma once
 #define NOMINMAX
-#include <windows.h>      // For common windows data types and function headers
+#include <windows.h>
 #define STRICT_TYPED_ITEMIDS
 #include "Shlwapi.h"
-#include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
+#include <shobjidl.h>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 
 class FileDialogBase : public IFileDialogEvents, public IFileDialogControlEvents {
 
@@ -56,7 +71,7 @@ public:
     #pragma warning( disable : 4100 ) // Disable "unused formal parameter" warning
     #pragma warning( disable : 4838 ) // Disable a warning related to QITAB
 
-    // IUnknown
+    // IUnknown virtual functions
 
     ULONG STDMETHODCALLTYPE AddRef () { return ++_refCount;  }
     ULONG STDMETHODCALLTYPE Release() { return _refCount ? --_refCount : 0; }
@@ -67,7 +82,7 @@ public:
         return QISearch(this, qit, riid, ppv);
     }
 
-    // IFileDialogEvents
+    // IFileDialogEvents virtual functions
 
     STDMETHODIMP OnFileOk         (IFileDialog* pfd)                                                          { return E_NOTIMPL; }
     STDMETHODIMP OnFolderChanging (IFileDialog* pfd, IShellItem* psiFolder)                                   { return E_NOTIMPL; }
@@ -77,7 +92,7 @@ public:
     STDMETHODIMP OnTypeChange     (IFileDialog* pfd)                                                          { return E_NOTIMPL; }
     STDMETHODIMP OnOverwrite      (IFileDialog* pfd, IShellItem* psi, FDE_OVERWRITE_RESPONSE* pResponse)      { return E_NOTIMPL; }
 
-    // IFileDialogControlEvents
+    // IFileDialogControlEvents virtual functions
 
     STDMETHODIMP OnItemSelected      (IFileDialogCustomize* pfdc, DWORD dwIDCtl, DWORD dwIDItem) { return E_NOTIMPL; }
     STDMETHODIMP OnButtonClicked     (IFileDialogCustomize* pfdc, DWORD dwIDCtl)                 { Close(dwIDCtl); return 0; }
@@ -286,6 +301,6 @@ struct OpenDialogBase : FileDialogBase {
 struct SaveDialogBase : FileDialogBase {
     SaveDialogBase() : FileDialogBase(true) {}
     ~SaveDialogBase() {}
-    IFileSaveDialog* dialog() { return dynamic_cast<IFileSaveDialog*>(_dialog); }
-    IFileSaveDialog* operator->() { return dialog(); }
+    IFileSaveDialog* dialog() const { return dynamic_cast<IFileSaveDialog*>(_dialog); }
+    IFileSaveDialog* operator->() const { return dialog(); }
 };

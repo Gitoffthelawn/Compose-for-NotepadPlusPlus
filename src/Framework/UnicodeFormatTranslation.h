@@ -1,5 +1,5 @@
-// This file is part of Compose for Notepad++.
-// Copyright 2023, 2025 by Randall Joseph Fellmy <software@coises.com>, <http://www.coises.com/software/>
+// This file is part of "NppCppMSVS: Visual Studio Project Template for a Notepad++ C++ Plugin"
+// Copyright 2025, 2026 by Randall Joseph Fellmy <software@coises.com>, <http://www.coises.com/software/>
 
 // The source code contained in this file is independent of Notepad++ code.
 // It is released under the MIT (Expat) license:
@@ -19,9 +19,12 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+// This header provides inline functions for conversion between between Unicode formats utf-8, utf-16 and utf-32.
+// It also contains inline functions in the utf8byte namespace for interpreting individual bytes in a utf-8 stream.
 
+#pragma once
 #include <string>
+#include <string_view>
 
 enum class InvalidUnicode {
     Substitute  = 0,  // Use substitution character when transcoding invalid Unicode
@@ -100,12 +103,12 @@ inline std::u32string utf8to32(const std::string_view s, InvalidUnicode errs = I
             i += 2;
             continue;
         case 4:
-            if (i + 3 >= s.length() || !utf8byte::valid_trail(s[i], s[i + 1], s[i + 2]), s[i + 3]) break;
-            u += utf8byte::to32(s[i], s[i + 1], s[i + 2]);
+            if (i + 3 >= s.length() || !utf8byte::valid_trail(s[i], s[i + 1], s[i + 2], s[i + 3])) break;
+            u += utf8byte::to32(s[i], s[i + 1], s[i + 2], s[i + 3]);
             i += 3;
             continue;
         }
-        u += (errs == InvalidUnicode::Preserve_8) ? 0xDC00 + s[i] : 0xFFFD;
+        u += (errs == InvalidUnicode::Preserve_8) ? 0xDC00 | s[i] : 0xFFFD;
     }
     return u;
 }
@@ -164,7 +167,7 @@ inline std::wstring utf8to16(const std::string_view s, InvalidUnicode errs = Inv
             i += 3;
             continue;
         }
-        w += (errs == InvalidUnicode::Preserve_8) ? 0xDC00 + s[i] : 0xFFFD;
+        w += (errs == InvalidUnicode::Preserve_8) ? 0xDC00 | s[i] : 0xFFFD;
     }
     return w;
 }
@@ -178,14 +181,14 @@ inline std::string utf16to8(const std::wstring_view w, InvalidUnicode errs = Inv
             s += static_cast<char>((c >> 6) | 0xC0);
             s += static_cast<char>((c & 0x3F) | 0x80);
         }
-        else if (c < 0xD800 && c > 0xDFFF) {
+        else if (c < 0xD800 || c > 0xDFFF) {
             s += static_cast<char>((c >> 12) | 0xE0);
             s += static_cast<char>(((c >> 6) & 0x3F) | 0x80);
             s += static_cast<char>((c & 0x3F) | 0x80);
         }
         else {
-            if (i + 1 < w.length() && w[i + 1] >= 0xDC00 && w[i + 1] <= 0xDFFF) {
-                char32_t u = (static_cast<char32_t>(c & 0x7FF) << 10 | (w[i + 1] & 0x03FF)) + 0x10000;
+            if (i + 1 < w.length() && c < 0xDC00 && w[i + 1] >= 0xDC00 && w[i + 1] <= 0xDFFF) {
+                char32_t u = ((static_cast<char32_t>(c & 0x3FF) << 10) | (w[i + 1] & 0x03FF)) + 0x10000;
                 s += static_cast<char>((u >> 18) | 0xF0);
                 s += static_cast<char>(((u >> 12) & 0x3F) | 0x80);
                 s += static_cast<char>(((u >> 6) & 0x3F) | 0x80);
